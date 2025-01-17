@@ -12,7 +12,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { SearchDialog } from "@/components/shared/search-dialog/search-dialog";
+import { SearchDialog } from "@/components/shared/search-dialog/index";
 import { Button } from "@/components/ui/button";
 
 import { LuShoppingCart } from "react-icons/lu";
