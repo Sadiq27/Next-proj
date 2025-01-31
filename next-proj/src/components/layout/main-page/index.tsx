@@ -14,12 +14,14 @@ import { HiOutlineCube } from "react-icons/hi";
 import { GoArrowRight } from "react-icons/go";
 import { ProductCard } from "@/components/shared/product-card";
 import { ItemProps } from "@/components/helpers/interfaces/items";
-
-import { navbar } from "@/data/navbar";
+import { NavBarProps } from "@/components/helpers/interfaces/nav-bar";
 
 export default async function Main() {
   // Your api call ....
   // return json() and integrate to page
+
+  const res = await fetch(`${process.env.API_HOST}/nav-bar`);
+  const navbar: NavBarProps[] = await res.json();
 
   const response = await fetch(`${process.env.API_HOST}/items`);
   const items = await response.json();
