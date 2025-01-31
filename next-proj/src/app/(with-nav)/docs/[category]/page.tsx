@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { RxRocket } from "react-icons/rx";
+import ProductsContainer from "@/components/shared/products-container";
+import { ProductCard } from "@/components/shared/product-card";
+import { CategoryProps } from "@/components/helpers/interfaces/category";
 
 interface Props {
   params: {
@@ -9,6 +12,17 @@ interface Props {
 
 export default async function CategoryPage({ params }: Props) {
   const { category } = await params;
+
+  const response = await fetch(
+    `${process.env.API_HOST}/docs/${category}`
+  );
+
+  console.log(`${process.env.API_HOST}/docs/${category}`);
+
+  const items = await response.json();
+
+  console.log(items);
+
   return (
     <div className="container mt-10 flex flex-col gap-8">
       <div className="flex flex-col gap-1">
@@ -19,6 +33,17 @@ export default async function CategoryPage({ params }: Props) {
           Buy {category} from the best stores
         </p>
       </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+        {items.map((product: CategoryProps) => (
+          <Link key={product.id} href={product.href}>
+            <ProductCard product={product} />
+          </Link>
+        ))}
+      </div>
+
+      <ProductsContainer />
+
       <div className="flex flex-col w-full h-[300px] border rounded-lg items-center justify-center gap-8">
         <div className="flex aspect-square size-fit items-center justify-center rounded-full border border-dashed p-4">
           <RxRocket className="text-[20px]" />
