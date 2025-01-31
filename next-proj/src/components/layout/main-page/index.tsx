@@ -17,9 +17,6 @@ import { ItemProps } from "@/components/helpers/interfaces/items";
 import { NavBarProps } from "@/components/helpers/interfaces/nav-bar";
 
 export default async function Main() {
-  // Your api call ....
-  // return json() and integrate to page
-
   const res = await fetch(`${process.env.API_HOST}/nav-bar`);
   const navbar: NavBarProps[] = await res.json();
 
