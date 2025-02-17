@@ -1,4 +1,5 @@
 import { NavBar } from "@/components/layout/nav-bar/nav-bar";
+import Footer from "@/components/layout/footer";
 
 export default function WithNavLayout({
   children,
@@ -9,6 +10,7 @@ export default function WithNavLayout({
     <>
       <NavBar />
       {children}
+      <Footer/>
     </>
   );
 }
