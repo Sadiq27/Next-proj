@@ -3,7 +3,6 @@ import * as React from "react";
 
 import { SearchDialog } from "@/components/shared/search-dialog";
 
-import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -18,9 +17,10 @@ import { Sidebar } from "@/components/shared/sidebar";
 
 import { NavBarProps } from "@/components/helpers/interfaces/nav-bar";
 import NavItem from "@/components/shared/nav-item";
+import ProfileButton from "@/components/shared/profile-button";
 
 export async function NavBar() {
-  const response = await fetch(`${process.env.API_HOST}/nav-bar`);
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/nav-bar`);
   if (!response.ok) {
     throw new Error("Failed to load navbar data");
   }
@@ -81,9 +81,7 @@ export async function NavBar() {
         <div className="flex items-center gap-4">
           <SearchDialog />
           <Sidebar />
-          <Button>
-            <Link href="/auth/signin">Sign in </Link>
-          </Button>
+          <ProfileButton />
         </div>
       </div>
     </div>

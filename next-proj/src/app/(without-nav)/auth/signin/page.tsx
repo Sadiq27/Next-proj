@@ -11,77 +11,121 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FaGoogle } from "react-icons/fa";
-import { FaDiscord } from "react-icons/fa";
+import { useSession, signIn } from "next-auth/react";
+
+import { FaGithub, FaGoogle } from "react-icons/fa";
+
+import { FormProvider, useForm } from "react-hook-form";
+import { formLoginSchema, TFormLoginValues } from "../schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
+  const router = useRouter();
+  const { data: session } = useSession();
+  console.log(session, 99999);
+
+  const form = useForm<TFormLoginValues>({
+    resolver: zodResolver(formLoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (data: TFormLoginValues) => {
+    try {
+      const resp = await signIn("credentials", {
+        ...data,
+        redirect: false,
+      });
+
+      if (resp?.ok) {
+        router.push("/");
+      } else {
+        form.setError("root", { message: "Invalid user data" });
+      }
+    } catch (error) {
+      console.error(error);
+
+      form.setError("root", { message: "Something wrong" });
+    }
+  };
+
   return (
     <div className="flex h-screen">
       <div className="w-1/2 flex items-center justify-center">
-        <Card className="w-[450px]">
-          <CardHeader>
-            <div>
-              <CardTitle className="mb-1 text-2xl font-semibold">Sign in</CardTitle>
-              <CardDescription>
-                Choose your preferred sign in method
-              </CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent className="p-6 pt-0 grid gap-4">
-            <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-4">
-                    <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 w-full bg-background">
-                      <FaGoogle className="mr-2 size-4" />
-                      Google
-                    </button>
-
-                  <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 w-full bg-background">
-                      <FaDiscord className="mr-2 size-4" />
-                      Discord
-                  </button>
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t"></span>
-              </div>
-
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
-              </div>
-            </div>
-
-            <form>
-              <div className="grid w-full items-center gap-4">
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="name">Email</Label>
-                  <Input id="name" placeholder="example@gmail.com" />
+        <FormProvider {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <Card className="w-[450px]">
+              <CardHeader>
+                <CardTitle className="text-2xl font-semibold">
+                  Sign in
+                </CardTitle>
+                <CardDescription>
+                  Deploy your new project in one-click.
+                  <div>...</div>
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid w-full items-center gap-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      placeholder="example@gmail.com"
+                      {...form.register("email")}
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="password">Password</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="********"
+                      {...form.register("password")}
+                    />
+                  </div>
                 </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="framework">Password</Label>
-                  <Input id="name" type="password" placeholder="********" />
-                </div>
-              </div>
-            </form>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button className="w-full">Sign in</Button>
-          </CardFooter>
+                <CardDescription>
+                  Choose your preferred sign in method
+                  <div className="flex flex-col items-center space-y-4 mt-5">
+                    <div className="flex w-full space-x-4">
+                      <Button className="flex items-center justify-center w-1/2 border bg-transparent text-white font-semibold hover:text-black ">
+                        <FaGoogle /> Google
+                      </Button>
+                      <Button
+                        onClick={() =>
+                          signIn("github", {
+                            callbackUrl: "/",
+                            redirect: true,
+                          })
+                        }
+                        className="flex items-center justify-center w-1/2 border bg-transparent text-white font-semibold hover:text-black "
+                      >
+                        <FaGithub /> GitHub
+                      </Button>
+                    </div>
 
-          <div className="p-6 pt-0 flex flex-wrap items-center justify-between gap-2">
-            <div className="text-sm text-muted-foreground">
-              <span className="mr-1 hidden sm:inline-block">Don't have an account?</span>
-
-              <a aria-label="Sign up" className="text-primary underline-offset-4 transition-colors hover:underline" href="signup">
-                Sign up
-              </a>
-
-            </div>
-            
-            <a aria-label="Reset password" className="text-sm text-primary underline-offset-4 transition-colors hover:underline" href="reset-password">
-              Reset password
-            </a>
-          </div>
-        </Card>
+                    {/* Divider */}
+                    <div className="flex items-center w-full">
+                      <hr className="flex-1 border-gray-600" />
+                      <span className="mx-4 text-xs text-gray-400">
+                        OR CONTINUE WITH
+                      </span>
+                      <hr className="flex-1 border-gray-600" />
+                    </div>
+                  </div>
+                </CardDescription>
+              </CardContent>
+              <CardFooter className="flex justify-between">
+                <Button className="w-full" type="submit">
+                  Sign in
+                </Button>
+              </CardFooter>
+            </Card>
+          </form>
+        </FormProvider>
       </div>
       <div className="w-1/2 relative">
         <div
